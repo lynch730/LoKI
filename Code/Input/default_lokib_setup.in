@@ -20,7 +20,7 @@ workingConditions:
 % --- configuration of the electron kinetics ---
 electronKinetics:
   isOn: true                           % true or false (to activate or deactivate the electron kinetics)
-  eedfType: boltzmann                  % boltzmann or prescribedEedf (generalized expression Maxwellian/Druyvesteyn)
+  eedfType: boltzmann_opt                  % boltzmann or prescribedEedf (generalized expression Maxwellian/Druyvesteyn)
 %   shapeParameter: 1                  % prescribedEedf shape parameter from 1 (Maxwellian) to 2 (Druyvesteyn)
   ionizationOperatorType: usingSDCS    % conservative, oneTakesAll, equalSharing or usingSDCS
   growthModelType: temporal            % temporal or spatial
@@ -73,7 +73,7 @@ electronKinetics:
           
 % --- configuration of the graphical user interface ---
 gui: 
-  isOn: true
+  isOn: false
   refreshFrequency: 1
 
 % ---  configuration of the output files ---
