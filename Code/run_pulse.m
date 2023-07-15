@@ -2,12 +2,9 @@
 
 clear; clc;
 
-
 setupFile = 'default_lokib_pulse_setup.in';
-% save setupFile 
-% clear all
-% load setupfile
 
+clear Boltzmann Collision EedfGas EedfState Output
 setup = Setup(setupFile);
 electronKinetics = setup.initializeSimulation();
 
