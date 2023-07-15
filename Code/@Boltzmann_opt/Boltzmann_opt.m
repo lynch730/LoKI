@@ -91,14 +91,14 @@ classdef Boltzmann_opt < handle
         
         %% Constructor
         function bz = Boltzmann_opt(setup)
-            
+                    
             % store the gas array
             bz.gasArray = setup.electronKineticsGasArray;
             bz.energyGrid = setup.energyGrid;
-    
+            
             % store the energy grid and add corresponding listener
             addlistener(bz.energyGrid, 'updatedMaxEnergy2', @bz.evaluateMatrix);
-    
+            
             % store working conditions and add corresponding listeners
             bz.workCond = setup.workCond;
             addlistener(bz.workCond, 'updatedGasTemperature', @bz.evaluateMatrix);
@@ -111,13 +111,13 @@ classdef Boltzmann_opt < handle
             if isfield(ek, 'CARgases')
                 bz.CARgases = ek.CARgases;
             end
-
+            
             % store electron-impact ionization operator type
-            bz.ionCollOpType = ek.ionizationOperatorType; 
-
+            bz.ionCollOpType = ek.ionizationOperatorType;
+            
             % store electron density growth model type
             bz.eDensGrowthModel = ek.growthModelType;
-
+            
             % store electron-electron collisions setups
             bz.includeEECollisions = ek.includeEECollisions;
             
@@ -126,14 +126,14 @@ classdef Boltzmann_opt < handle
             ek_nlr = ek.numerics.nonLinearRoutines;
             bz.nonLinearAlgorithm = ek_nlr.algorithm;
             bz.maxEedfRelError = ek_nlr.maxEedfRelError;
-            if strcmp(bz.nonLinearAlgorithm, 'mixingDirectSolutions') 
+            if strcmp(bz.nonLinearAlgorithm, 'mixingDirectSolutions')
                 bz.mixingParameter = ek_nlr.mixingParameter;
             else
                 % store configuration of the ODE solver
                 options = odeset();
                 for parameter = fields(options)'
                     if isfield(ek_nlr, 'odeSetParameters') && ...
-                        isfield(ek_nlr.odeSetParameters, parameter{1})
+                            isfield(ek_nlr.odeSetParameters, parameter{1})
                         options.(parameter{1}) = ek_nlr.odeSetParameters.(parameter{1});
                     end
                 end
@@ -143,7 +143,7 @@ classdef Boltzmann_opt < handle
             
             % check if the the simulation is steady-state or pulsed
             if setup.pulsedSimulation
-    
+            
                 % store information about pulsed simulation if activated
                 bz.isTimeDependent = true;
                 pinfo = setup.pulseInfo;
@@ -153,14 +153,14 @@ classdef Boltzmann_opt < handle
                 bz.pulseSamplingType = pinfo.samplingType;
                 bz.pulseSamplingPoints = pinfo.samplingPoints;
                 bz.pulseFunctionParameters = pinfo.functionParameters;
-    
+            
                 % set initial value of the reduced electric field in the
                 % working conditions object
                 bz.workCond.reducedField = bz.pulseFunction(0, bz.pulseFunctionParameters);
                 bz.workCond.reducedFieldSI = bz.workCond.reducedField*1e-21;
-                
+            
             end
-              
+            
             % % allocate memory for different properties
             % boltzmann.totalCrossSection = zeros(1,boltzmann.energyGrid.cellNumber+1);
             % boltzmann.elasticCrossSection = zeros(1,boltzmann.energyGrid.cellNumber+1);
@@ -172,7 +172,7 @@ classdef Boltzmann_opt < handle
             % boltzmann.continuousMatrix = zeros(boltzmann.energyGrid.cellNumber,boltzmann.energyGrid.cellNumber);
             % boltzmann.discreteMatrix = zeros(boltzmann.energyGrid.cellNumber,boltzmann.energyGrid.cellNumber);
             % boltzmann.ionizationIneMatrix = zeros(boltzmann.energyGrid.cellNumber,boltzmann.energyGrid.cellNumber);
-    
+            
             % % initialize quantities of the ionization and electron-electron routines
             % boltzmann.ionizationMatrix = zeros(boltzmann.energyGrid.cellNumber,boltzmann.energyGrid.cellNumber);
             % boltzmann.Aee = zeros(boltzmann.energyGrid.cellNumber,boltzmann.energyGrid.cellNumber);
@@ -182,10 +182,9 @@ classdef Boltzmann_opt < handle
             % boltzmann.fieldMatrixSpatGrowth = zeros(boltzmann.energyGrid.cellNumber);
             % boltzmann.fieldMatrixTempGrowth = zeros(boltzmann.energyGrid.cellNumber);
             % boltzmann.ionTemporalGrowth = zeros(boltzmann.energyGrid.cellNumber);
+
+            bz.evaluateMatrix(); % Evaluate boltzmann matrix
             
-            % Evaluate boltzmann matrix
-            bz.evaluateMatrix();
-    
         end
         
         % Declerations
@@ -199,6 +198,7 @@ classdef Boltzmann_opt < handle
     methods (Access = private)
         
         % Helper
+        bz = process_setup(setup)
         updateGasTemperatureDependencies(boltzmann, ~, ~)
         
         % Operators
