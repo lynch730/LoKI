@@ -146,7 +146,7 @@ classdef Setup < handle
       % (partially implemented if electron kinetics is enabled and chemistry is disabled)
       if setup.enableElectronKinetics
         % select working conditions eligeble for jobs
-        if strcmpi(setup.info.electronKinetics.eedfType, 'boltzmann')
+        if contains(setup.info.electronKinetics.eedfType, 'boltzmann')
           auxWorkingConditions.reducedField = setup.info.workingConditions.reducedField;
         elseif strcmpi(setup.info.electronKinetics.eedfType, 'prescribedEedf')
           auxWorkingConditions.electronTemperature = setup.info.workingConditions.electronTemperature;
@@ -546,6 +546,8 @@ classdef Setup < handle
       switch lower(setup.info.electronKinetics.eedfType)
         case 'boltzmann'
           electronKinetics = Boltzmann(setup);
+        case 'boltzmann_opt'
+            electronKinetics = Boltzmann_opt(setup);
         case 'prescribedeedf'
           if ~isfield(setup.info.electronKinetics, 'shapeParameter')
             error(['When selectinc a ''prescribedEedf'' the user must include the '...
@@ -647,7 +649,7 @@ classdef Setup < handle
           if ~isfield(setupInfo.electronKinetics, 'eedfType')
             error([str1 '''eedfType'' field not found in the ' ...
               '''electronKinetics'' section of the setup file.' str2],1);
-          elseif ~any(strcmp({'boltzmann' 'prescribedEedf'}, setupInfo.electronKinetics.eedfType))
+          elseif ~any(strcmp({'boltzmann', 'boltzmann_opt', 'prescribedEedf'}, setupInfo.electronKinetics.eedfType))
             error([str1 'Wrong value for the field ' ...
               '''electronKinetics>eedfType''.\nValue should be either: ''boltzmann'' or ''prescribedEedf''.' str2],1);
           elseif strcmp(setupInfo.electronKinetics.eedfType, 'prescribedEedf')

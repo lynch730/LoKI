@@ -19,7 +19,7 @@ workingConditions:
 % --- configuration of the electron kinetics ---
 electronKinetics:
   isOn: true                           % true or false (to activate or deactivate the electron kinetics)
-  eedfType: boltzmann                  % boltzmann or prescribedEedf (generalized expression Maxwellian/Druyvesteyn)
+  eedfType: boltzmann_opt                  % boltzmann or prescribedEedf (generalized expression Maxwellian/Druyvesteyn)
   ionizationOperatorType: equalSharing % conservative, oneTakesAll, equalSharing or usingSDCS
   growthModelType: temporal            % temporal or spatial
   includeEECollisions: false           % true or false (to include / remove e-e collisions)
