@@ -143,7 +143,7 @@ classdef Boltzmann_opt < handle
             
             % check if the the simulation is steady-state or pulsed
             if setup.pulsedSimulation
-            
+                
                 % store information about pulsed simulation if activated
                 bz.isTimeDependent = true;
                 pinfo = setup.pulseInfo;
@@ -184,7 +184,7 @@ classdef Boltzmann_opt < handle
             % boltzmann.ionTemporalGrowth = zeros(boltzmann.energyGrid.cellNumber);
 
             bz.evaluateMatrix(); % Evaluate boltzmann matrix
-            
+
         end
         
         % Declerations

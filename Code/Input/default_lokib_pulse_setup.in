@@ -44,8 +44,8 @@ electronKinetics:
       - N2(X,v=*) = boltzmannPopulation@gasTemperature
   numerics:                            % configuration of numerical details of the simulation
     energyGrid:                        % properties of the energy grid (in eV)
-      maxEnergy: 100                    % (use 18-20 for time-dependent simulations)
-      cellNumber: 200                 % (use 1800-2000 for time-dependent simulations)
+      maxEnergy: 1000                  % (use 18-20 for time-dependent simulations)
+      cellNumber: 500                  % (use 1800-2000 for time-dependent simulations)
     maxPowerBalanceRelError: 100       % threshold for the relative power balance warning message (use at least 100 for time dependent simulations)
     nonLinearRoutines:
       algorithm: temporalIntegration   % mixingDirectSolutions or temporalIntegration
