@@ -1,4 +1,4 @@
-function dydt = eedfTimeDerivative_opt(t, y, p)
+function dydt = eedfTimeDerivative_opt(t, y, p, isjac)
     % eedfTimeDerivative evaluates the time derivative of the EEDF at a
     % given time t, assuming that the EEDF at this precise time is given by
     % eedf.
@@ -46,7 +46,7 @@ function dydt = eedfTimeDerivative_opt(t, y, p)
                 
                 g_fTGA = EN2 * g_fTGA;
                 B = 1.0 ./ sqrt(p.eCell);
-                
+
                 M = p.M; 
                 ind0 = 2:p.N+1:p.N*p.N;
                 ind = 1:p.N+1:p.N*p.N;
@@ -57,7 +57,7 @@ function dydt = eedfTimeDerivative_opt(t, y, p)
 
                 M = M .* p.Nden .* p.gamma;
                 dfdt = M * eedf;
-
+                
             case 'spatial'
 
                 % evaluation of gas density times diffusion coefficient and
@@ -128,9 +128,17 @@ function dydt = eedfTimeDerivative_opt(t, y, p)
     
     % collect derivatives of the different variables
     if p.eDen_td_flag
-        dydt = [dfdt; ne * p.ne_gasDensity * CIEff];
+        if isjac
+            error('Not yet implemented!')
+        else
+            dydt = [dfdt; ne * p.ne_gasDensity * CIEff];
+        end
     else
-        dydt = [dfdt; 0];
+        if isjac
+            dydt = sparse(1,1,0,p.N+1,p.N+1,nnz(M));
+            dydt(1:p.N,1:p.N) = M;
+        else
+            dydt = [dfdt; 0];
+        end
     end
-
 end

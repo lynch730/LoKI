@@ -831,6 +831,8 @@ classdef Boltzmann < handle
       eedfTimeDerivative(0, [auxEedf auxNe]', boltzmann, true, eDensIsTimeDependentAux);    % flush persistent variables previously stored in function memory
       odeOptionsLocal = boltzmann.odeOptions;                     % load ode options specified by the user
       odeOptionsLocal.NonNegative = 1:length(auxEedf)+1;          % ensure non negative values for the components of the eedf
+      odeOptionsLocal.AbsTol = 1.0e-15;
+      odeOptionsLocal.RelTol = 1.0e-8;
       if GUIisActive
         odeOptionsLocal.OutputFcn = @odeProgressBar;
         odeProgressBar(0, 0, 'firstInit', boltzmann.pulseFirstStep, boltzmann.pulseFinalTime);
@@ -843,6 +845,7 @@ classdef Boltzmann < handle
       finalEedfs = [];
       finalNe = [];
       
+      starttime = tic;
       while finalTimeIdx < length(times)
         % evaluate final target time of the current chunk
         if initialTimeIdx == 1
@@ -887,14 +890,38 @@ classdef Boltzmann < handle
           finalNe = [finalNe; neSol(2:end)];
         end
       end
+      wall_time = toc(starttime);
       
       % close ode integration progress bar in case it was active
       if GUIisActive
         odeProgressBar(0,0,'lastDone');
       end
       
+%           % Temp plot
+%         figure(1); clf; hold on;
+%         ax = gca;
+%         ax.XScale = 'log';
+%         ax.YScale = 'log';
+%         ee = boltzmann.energyGrid.cell;
+%         ax.XLim = [ee(1), ee(end)];
+%         ax.YLim = [1e-100 1e20];
+%         pp = plot(ee, finalEedfs(1,:), '-k');
+%         for idx = 1:Nt
+%             pp.YData = abs(finalEedfs(idx,:));
+%             drawnow
+%             pause(0.01)
+%         end
+
+      Nt = numel(finalTimes);
+      NN = boltzmann.energyGrid.cellNumber;
+
+      times = zeros(Nt, 1);
+      ebar = zeros(Nt, 1);
+      solf = zeros(Nt, NN);
+      rates = zeros(Nt, numel(boltzmann.gasArray.collisionArray));
+
       % evaluate output and save solutions for each time step
-      for idx = 1:length(finalTimes)
+      for idx = 1:Nt
         
         % evaluate current working conditions(and save them into the working conditions object)
         boltzmann.workCond.currentTime = finalTimes(idx);
@@ -922,7 +949,18 @@ classdef Boltzmann < handle
         
         % bradcast obtention of a solution for the boltzmann equation
         notify(boltzmann, 'obtainedNewEedf');
-      end
+
+        times(idx, 1) = finalTimes(idx);
+        ebar(idx, 1) = boltzmann.swarmParam.meanEnergy;
+        solf(idx, :) = boltzmann.eedf;
+        rates(idx, :) = boltzmann.rateCoeffAll.value;
+
+      end 
+
+      eref = boltzmann.energyGrid.cell;
+      coll_str = {boltzmann.rateCoeffAll.collDescription};
+      fname = ['lokib_pulse_N', sprintf('%i', NN) ,'.mat'];
+      save(fname, 'eref', 'times', 'ebar', 'wall_time', 'solf', 'rates', 'coll_str');
       
     end
     
@@ -954,6 +992,7 @@ classdef Boltzmann < handle
       eedfTimeDerivative(0, [eedf boltzmann.workCond.electronDensity]', boltzmann, true, false); % flush persistent variables previously stored in function memory
       odeOptionsLocal = boltzmann.odeOptions;
       odeOptionsLocal.NonNegative = 1:length(eedf);
+%       odeOptionsLocal.
       odeOptionsLocal.Events = @steadyStateEventFcn;
       [~,~,~,variablesSolution,~] = ode15s(@eedfTimeDerivative, [0 inf], [eedf boltzmann.workCond.electronDensity]', odeOptionsLocal, boltzmann, false, false);
       

@@ -5,7 +5,7 @@
 
 % --- configuration of the working conditions ---
 workingConditions:
-  reducedField: pulse@reducedFieldPulse, 1e-12, 1e-4, logspace, 200, 1e-6, 100 % pulse@functionName, firstStep, finalTime, samplingType, samplingPoints, aditionalParameters
+  reducedField: pulse@reducedFieldPulse, 1e-18, 1e-5, logspace, 2000, 1e-6, 50 % pulse@functionName, firstStep, finalTime, samplingType, samplingPoints, aditionalParameters
   excitationFrequency: 0                      % in Hz
   gasPressure: 101325.0                       % in Pa
   gasTemperature: 300                         % in K   (average gas temperature)
@@ -19,7 +19,7 @@ workingConditions:
 % --- configuration of the electron kinetics ---
 electronKinetics:
   isOn: true                           % true or false (to activate or deactivate the electron kinetics)
-  eedfType: boltzmann_opt                  % boltzmann or prescribedEedf (generalized expression Maxwellian/Druyvesteyn)
+  eedfType: boltzmann                  % boltzmann or prescribedEedf (generalized expression Maxwellian/Druyvesteyn)
   ionizationOperatorType: equalSharing % conservative, oneTakesAll, equalSharing or usingSDCS
   growthModelType: temporal            % temporal or spatial
   includeEECollisions: false           % true or false (to include / remove e-e collisions)
@@ -44,14 +44,14 @@ electronKinetics:
       - N2(X,v=*) = boltzmannPopulation@gasTemperature
   numerics:                            % configuration of numerical details of the simulation
     energyGrid:                        % properties of the energy grid (in eV)
-      maxEnergy: 1000                  % (use 18-20 for time-dependent simulations)
-      cellNumber: 500                  % (use 1800-2000 for time-dependent simulations)
+      maxEnergy: 250                  % (use 18-20 for time-dependent simulations)
+      cellNumber: 1000                  % (use 1800-2000 for time-dependent simulations)
     maxPowerBalanceRelError: 100       % threshold for the relative power balance warning message (use at least 100 for time dependent simulations)
     nonLinearRoutines:
       algorithm: temporalIntegration   % mixingDirectSolutions or temporalIntegration
       mixingParameter: 0.7             % mixingDirectSolutions mixing parameter from 0 to 1
       maxEedfRelError: 1e-8            % maximum rel. variation for EEDF between two iterations (stop criterion)
-          
+      
 % --- configuration of the graphical user interface ---
 gui: 
   isOn: false
@@ -62,11 +62,4 @@ output:
   isOn: false
   folder: simulation1
   dataFiles:
-%     - inputs
-    - log
-    - eedf
-    - swarmParameters
-    - rateCoefficients
-    - powerBalance
-    - lookUpTable
 

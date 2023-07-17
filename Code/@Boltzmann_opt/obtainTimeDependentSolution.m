@@ -48,15 +48,19 @@ function obtainTimeDependentSolution(bz)
     Ngroup = numel(tdx)-1; 
 
     % Set ode function with parameters p
-    ode_func = @(t, y) eedfTimeDerivative_opt(t, y, p);
+    ode_func = @(t, y) eedfTimeDerivative_opt(t, y, p, 0);
     jac_func = @(t, y) eedfTimeDerivative_opt(t, y, p, 1);
 
     % load ode options specified by the user
     odeOptionsLocal = bz.odeOptions;
 %     odeOptionsLocal.NonNegative = 1:length(eedf)+1; % ensure >0 EEDF
-%     odeOptionsLocal.Jacobian = jac_func;
-    odeOptionsLocal.AbsTol = 1.0e-15;
-    odeOptionsLocal.RelTol = 1.0e-8;
+    odeOptionsLocal.Jacobian = jac_func;
+    odeOptionsLocal.AbsTol = 1.0e-10;
+    odeOptionsLocal.RelTol = 1.0e-5;
+    odeOptionsLocal.NormControl = 'off';
+%     odeOptionsLocal.BDF = 'on';
+%     odeOptionsLocal.MaxOrder = 5;
+    odeOptionsLocal.Stats = 'on';
 
     % GUI Settings
     if GUIisActive
@@ -76,7 +80,7 @@ function obtainTimeDependentSolution(bz)
         time_ind = tdx(i):tdx(i+1);
 
         % Run ODE
-        [ttmp, sol_tmp] = ode15s(ode_func, ...
+        [~, sol_tmp] = ode15s(ode_func, ...
                          times(time_ind), ...
                          sol(tdx(i), :)', ...
                          odeOptionsLocal);
