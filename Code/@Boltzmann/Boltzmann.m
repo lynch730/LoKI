@@ -833,6 +833,7 @@ classdef Boltzmann < handle
       odeOptionsLocal.NonNegative = 1:length(auxEedf)+1;          % ensure non negative values for the components of the eedf
       odeOptionsLocal.AbsTol = 1.0e-15;
       odeOptionsLocal.RelTol = 1.0e-8;
+      odeOptionsLocal.NormControl = 'on';
       if GUIisActive
         odeOptionsLocal.OutputFcn = @odeProgressBar;
         odeProgressBar(0, 0, 'firstInit', boltzmann.pulseFirstStep, boltzmann.pulseFinalTime);
@@ -864,7 +865,7 @@ classdef Boltzmann < handle
         end
         % perform temporal integration of the current chunk
 %         [timesSol,eedfsSol,~,~,~] = ...
-        [timesSol,solutions] = ode15s(@eedfTimeDerivative,times(initialTimeIdx:finalTimeIdx), [auxEedf auxNe]', ...
+        [timesSol,solutions] = ode23tb(@eedfTimeDerivative,times(initialTimeIdx:finalTimeIdx), [auxEedf auxNe]', ...
           odeOptionsLocal, boltzmann, false, eDensIsTimeDependentAux);
         % separate solutions
         eedfsSol = solutions(:,1:end-1);
@@ -996,7 +997,7 @@ classdef Boltzmann < handle
       odeOptionsLocal.NonNegative = 1:length(eedf);
 %       odeOptionsLocal.
       odeOptionsLocal.Events = @steadyStateEventFcn;
-      [~,~,~,variablesSolution,~] = ode15s(@eedfTimeDerivative, [0 inf], [eedf boltzmann.workCond.electronDensity]', odeOptionsLocal, boltzmann, false, false);
+      [~,~,~,variablesSolution,~] = ode23tb(@eedfTimeDerivative, [0 inf], [eedf boltzmann.workCond.electronDensity]', odeOptionsLocal, boltzmann, false, false);
       
       % select final solution if more than one is found
       if length(variablesSolution(:,1))>1
