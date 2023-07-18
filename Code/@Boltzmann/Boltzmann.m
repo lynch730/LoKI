@@ -953,7 +953,9 @@ classdef Boltzmann < handle
         times(idx, 1) = finalTimes(idx);
         ebar(idx, 1) = boltzmann.swarmParam.meanEnergy;
         solf(idx, :) = boltzmann.eedf;
-        rates(idx, :) = boltzmann.rateCoeffAll.value;
+        for j = 1:numel(boltzmann.rateCoeffAll)
+            rates(idx, j) = boltzmann.rateCoeffAll(j).value(1);
+        end
 
       end 
 
